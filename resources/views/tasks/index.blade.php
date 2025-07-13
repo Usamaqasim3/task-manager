@@ -3,8 +3,16 @@
 
     @include('components.flash')
 
-    <div class="mb-3 text-end">
-        <a href="{{ route('tasks.create') }}" class="btn btn-primary">+ New Task</a>
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <form method="GET" action="{{ route('tasks.index') }}" class="d-flex">
+                <input type="text" name="search" class="form-control me-2" placeholder="Search tasks by title..." value="{{ $search ?? '' }}">
+                <button class="btn btn-outline-primary" type="submit">Search</button>
+            </form>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ route('tasks.create') }}" class="btn btn-primary">+ New Task</a>
+        </div>
     </div>
 
     @if ($tasks->count())
@@ -45,8 +53,8 @@
             </table>
         </div>
 
-        {{ $tasks->links() }}
+        {{ $tasks->withQueryString()->links() }}
     @else
-        <p>No tasks found. Create one!</p>
+        <p>No tasks found{{ $search ? ' for "' . $search . '"' : '' }}.</p>
     @endif
 </x-app-layout>
