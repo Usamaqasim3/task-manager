@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TaskRequest;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +19,7 @@ class TaskController extends Controller
             $query->where('title', 'like', '%' . $search . '%');
         }
 
-        $tasks = $query->orderBy('due_date')->paginate(10);
+        $tasks = $query->orderBy('due_date')->paginate(3);
 
         return view('tasks.index', compact('tasks', 'search'));
     }
@@ -29,13 +30,9 @@ class TaskController extends Controller
         return view('tasks.create');
     }
 
-    public function store(Request $request)
+    public function store(TaskRequest $request)
     {
-        $request->validate([
-            'title' => 'required|string',
-            'due_date' => 'required|date',
-            'status' => 'required|in:pending,in_progress,completed',
-        ]);
+
 
         Auth::user()->tasks()->create($request->all());
 
@@ -54,15 +51,9 @@ class TaskController extends Controller
         return view('tasks.edit', compact('task'));
     }
 
-    public function update(Request $request, Task $task)
+    public function update(TaskRequest $request, Task $task)
     {
         $this->authorizeTask($task);
-
-        $request->validate([
-            'title' => 'required|string',
-            'due_date' => 'required|date',
-            'status' => 'required|in:pending,in_progress,completed',
-        ]);
 
         $task->update($request->all());
 
